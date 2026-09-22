@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "ruby-vips", "~> 2.0"
+gem "ruby-vips", "~> 2.0", require: false
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.1.3", ">= 8.1.3.1"
@@ -23,7 +23,7 @@ gem "jbuilder"
 # CSV support (unbundled from stdlib as of Ruby 3.4)
 gem "csv"
 # Pin to the 2.x series: json 3.x breaks ActiveSupport's cookie/session (de)serialization
-gem "json", "~> 3.0"
+gem "json", "~> 2.9"
 # Spanish translations for Rails/ActiveModel validation messages, dates, etc.
 gem "rails-i18n"
 

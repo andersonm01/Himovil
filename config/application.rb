@@ -39,6 +39,10 @@ module Himovil
     config.i18n.available_locales = [ :es ]
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # This app doesn't attach or transform images anywhere, so there's no
+    # variant processor to configure (avoids requiring libvips/imagemagick).
+    config.active_storage.variant_processor = :disabled
+
     # Don't generate system test files.
     config.generators.system_tests = nil
   end
