@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title><%= content_for(:title) || "Himovil · Gestión de celulares" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Himovil">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#2563eb">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <div class="app-shell">
+      <header class="top-bar">
+        <div class="flex items-center justify-between">
+          <h1 class="text-lg font-bold tracking-tight text-neutral-900 dark:text-neutral-50">
+            <%= content_for(:page_title) || "Himovil" %>
+          </h1>
+          <div class="flex items-center gap-3">
+            <%= yield :top_bar_action %>
+            <%= button_to session_path, method: :delete, class: "text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200", title: "Cerrar sesión", data: { turbo_confirm: "¿Cerrar sesión?" } do %>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>
+              </svg>
+            <% end %>
+          </div>
+        </div>
+      </header>
+
+      <% if notice %>
+        <div class="flash-notice" role="status"><%= notice %></div>
+      <% end %>
+      <% if alert %>
+        <div class="flash-alert" role="alert"><%= alert %></div>
+      <% end %>
+
+      <main class="page-content">
+        <%= yield %>
+      </main>
+
+      <% if (target = fab_target_path) %>
+        <%= link_to target, class: "fab", "aria-label": "Agregar" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+        <% end %>
+      <% end %>
+
+      <nav class="bottom-nav">
+        <%= link_to root_path, class: "bottom-nav-item #{'active' if nav_tab_active?('dashboard')}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/>
+          </svg>
+          Resumen
+        <% end %>
+        <%= link_to phones_path, class: "bottom-nav-item #{'active' if nav_tab_active?('phones')}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 19h2"/>
+          </svg>
+          Inventario
+        <% end %>
+        <%= link_to sales_path, class: "bottom-nav-item #{'active' if nav_tab_active?('sales')}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7h18l-1.5 11a2 2 0 0 1-2 1.7H6.5a2 2 0 0 1-2-1.7L3 7Z"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/>
+          </svg>
+          Ventas
+        <% end %>
+        <%= link_to credits_path, class: "bottom-nav-item #{'active' if nav_tab_active?('credits')}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19"/><path d="M6 15h4"/>
+          </svg>
+          Créditos
+        <% end %>
+      </nav>
+    </div>
+  </body>
+</html>

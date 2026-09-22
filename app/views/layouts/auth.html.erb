@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title><%= content_for(:title) || "Himovil · Iniciar sesión" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#2563eb">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <div class="flex min-h-dvh w-full items-center justify-center px-4 py-10">
+      <div class="w-full max-w-sm space-y-6">
+        <div class="text-center">
+          <h1 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-50">Himovil</h1>
+          <p class="text-sm text-neutral-500 dark:text-neutral-400">Gestión de venta de iPhones usados</p>
+        </div>
+
+        <% if notice %>
+          <div class="flash-notice mx-0!" role="status"><%= notice %></div>
+        <% end %>
+        <% if alert %>
+          <div class="flash-alert mx-0!" role="alert"><%= alert %></div>
+        <% end %>
+
+        <div class="card">
+          <%= yield %>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

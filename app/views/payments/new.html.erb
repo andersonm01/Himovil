@@ -1,0 +1,44 @@
+<% content_for :page_title, "Nuevo abono" %>
+
+<div class="space-y-5">
+  <div class="card p-3! text-sm">
+    <p class="stat-label"><%= @credit.code %> · <%= @credit.entity %></p>
+    <p class="font-medium"><%= @credit.customer_name %></p>
+    <p class="mt-1 text-neutral-500 dark:text-neutral-400">Saldo pendiente: <span class="font-semibold text-neutral-900 dark:text-neutral-50"><%= cop(@credit.pending_balance) %></span></p>
+  </div>
+
+  <%= form_with model: @payment, url: credit_payments_path(@credit), local: true, class: "space-y-5" do |f| %>
+    <% if @payment.errors.any? %>
+      <div class="flash-alert mx-0!">
+        <ul class="list-disc pl-5">
+          <% @payment.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div>
+      <%= f.label :payment_date, "Fecha", class: "field-label" %>
+      <%= f.date_field :payment_date, class: "field-input" %>
+    </div>
+
+    <div>
+      <%= f.label :amount, "Valor del abono", class: "field-label" %>
+      <%= f.number_field :amount, inputmode: "numeric", min: 1, step: 1000, class: "field-input", autofocus: true %>
+    </div>
+
+    <div>
+      <%= f.label :payment_method, "Método de pago", class: "field-label" %>
+      <%= f.select :payment_method, Payment::METHODS, { include_blank: "Selecciona" }, class: "field-select" %>
+    </div>
+
+    <div>
+      <%= f.label :note, "Nota", class: "field-label" %>
+      <%= f.text_area :note, rows: 2, class: "field-input" %>
+    </div>
+
+    <div class="space-y-2 pt-2">
+      <%= f.submit "Registrar abono", class: "btn-primary" %>
+      <%= link_to "Cancelar", credit_path(@credit), class: "btn-secondary" %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,49 @@
+<% content_for :page_title, "Créditos" %>
+
+<div class="space-y-4">
+  <%= form_with url: credits_path, method: :get, class: "space-y-2" do %>
+    <input type="search" name="q" value="<%= params[:q] %>" placeholder="Buscar por cliente" class="field-input">
+    <div class="flex gap-2 overflow-x-auto pb-1">
+      <%= select_tag :estado, options_for_select([ [ "Todos los estados", "" ] ] + Credit::STATUSES, params[:estado]), class: "field-select flex-1", onchange: "this.form.requestSubmit()" %>
+      <%= select_tag :entidad, options_for_select([ [ "Toda entidad", "" ] ] + Sale::FINANCING_ENTITIES, params[:entidad]), class: "field-select flex-1", onchange: "this.form.requestSubmit()" %>
+    </div>
+  <% end %>
+
+  <% if @credits.empty? %>
+    <div class="empty-state">
+      <p class="font-medium">No hay créditos para mostrar</p>
+      <p class="text-sm">Se crean automáticamente al registrar una venta financiada.</p>
+    </div>
+  <% else %>
+    <ul class="space-y-3">
+      <% @credits.each do |credit| %>
+        <li>
+          <%= link_to credit_path(credit), class: "card-link" do %>
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-xs font-medium text-neutral-400"><%= credit.code %> · <%= credit.entity %></p>
+                <p class="truncate font-semibold text-neutral-900 dark:text-neutral-50"><%= credit.customer_name %></p>
+                <p class="text-sm text-neutral-500 dark:text-neutral-400"><%= credit.phone&.model %></p>
+              </div>
+              <% if credit.paid? %>
+                <span class="badge-green shrink-0">Pagado</span>
+              <% elsif credit.overdue? %>
+                <span class="badge-red shrink-0">Atrasado</span>
+              <% else %>
+                <span class="badge-blue shrink-0">Activo</span>
+              <% end %>
+            </div>
+
+            <div class="mt-3 progress-track">
+              <div class="progress-fill" style="width: <%= credit.progress_percent %>%"></div>
+            </div>
+            <div class="mt-2 flex items-center justify-between text-sm">
+              <span class="text-neutral-500 dark:text-neutral-400">Abonado <%= cop(credit.total_paid) %></span>
+              <span class="font-semibold"><%= cop(credit.pending_balance) %> pendiente</span>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

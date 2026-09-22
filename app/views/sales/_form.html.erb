@@ -1,0 +1,177 @@
+<%= form_with model: sale, url: sale.persisted? ? sale_path(sale) : sales_path, local: true, class: "space-y-5" do |f| %>
+  <% if sale.errors.any? %>
+    <div class="flash-alert mx-0!">
+      <p class="font-semibold"><%= pluralize(sale.errors.count, "error") %> al guardar:</p>
+      <ul class="mt-1 list-disc pl-5">
+        <% sale.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :sale_date, "Fecha", class: "field-label" %>
+    <%= f.date_field :sale_date, class: "field-input" %>
+  </div>
+
+  <% if sale.persisted? %>
+    <div>
+      <p class="field-label">Celular vendido</p>
+      <div class="card p-3! text-sm">
+        <%= link_to "#{sale.phone.code} · #{sale.phone.model} #{sale.phone.storage_capacity}", edit_phone_path(sale.phone), class: "font-medium text-brand-700 dark:text-brand-400" %>
+      </div>
+    </div>
+  <% else %>
+    <div data-controller="icloud-warning"
+         data-icloud-warning-pending-value="<%= available_phones.select(&:icloud_pending?).map(&:id).to_json %>"
+         data-icloud-warning-prices-value="<%= available_phones.to_h { |p| [ p.id, p.sale_price ] }.to_json %>">
+      <%= f.label :phone_id, "Celular vendido", class: "field-label" %>
+      <%= f.select :phone_id,
+            available_phones.map { |p| [ "#{p.code} · #{p.model} #{p.storage_capacity} · #{cop(p.sale_price)}", p.id ] },
+            { include_blank: "Selecciona un celular disponible" },
+            class: "field-select", data: { icloud_warning_target: "select", action: "change->icloud-warning#update" } %>
+      <p data-icloud-warning-target="warning" hidden class="field-error">
+        ⚠️ Este celular tiene el iCloud/Apple ID sin liberar. Libéralo antes de venderlo.
+      </p>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <div>
+      <%= f.label :customer_name, "Nombre del cliente", class: "field-label" %>
+      <%= f.text_field :customer_name, class: "field-input" %>
+    </div>
+    <div>
+      <%= f.label :customer_id_number, "Cédula", class: "field-label" %>
+      <%= f.text_field :customer_id_number, inputmode: "numeric", class: "field-input" %>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <div>
+      <%= f.label :customer_phone, "Teléfono", class: "field-label" %>
+      <%= f.text_field :customer_phone, inputmode: "tel", class: "field-input" %>
+    </div>
+    <div>
+      <%= f.label :customer_email, "Email", class: "field-label" %>
+      <%= f.email_field :customer_email, class: "field-input" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :sale_price, "Precio de venta", class: "field-label" %>
+    <%= f.number_field :sale_price, inputmode: "numeric", min: 0, step: 1000, class: "field-input",
+          data: (sale.persisted? ? {} : { icloud_warning_target: "salePrice" }) %>
+  </div>
+
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <div>
+      <%= f.label :payment_method, "Forma de pago", class: "field-label" %>
+      <%= f.select :payment_method, Sale::PAYMENT_METHODS, { include_blank: "Selecciona" }, class: "field-select" %>
+    </div>
+    <div>
+      <%= f.label :financing_entity, "Entidad donde se fió", class: "field-label" %>
+      <%= f.select :financing_entity, Sale::FINANCING_ENTITIES, { selected: "N/A" }, class: "field-select" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <div>
+      <%= f.label :down_payment, "Cuota inicial", class: "field-label" %>
+      <%= f.number_field :down_payment, inputmode: "numeric", min: 0, step: 1000, class: "field-input" %>
+    </div>
+    <div>
+      <%= f.label :warranty_days, "Garantía (días)", class: "field-label" %>
+      <%= f.number_field :warranty_days, inputmode: "numeric", min: 0, class: "field-input" %>
+    </div>
+  </div>
+
+  <% unless sale.persisted? %>
+    <div data-controller="conditional">
+      <label class="field-checkbox-row">
+        <span>¿Recibió retoma?</span>
+        <%= f.check_box :trade_in, class: "h-5 w-5 rounded accent-brand-600",
+              data: { conditional_target: "source", action: "change->conditional#update",
+                       conditional_show_value: [ "true" ].to_json } %>
+      </label>
+
+      <div data-conditional-target="panel" hidden class="mt-4 space-y-4 rounded-2xl border border-dashed border-neutral-300 p-4 dark:border-neutral-700">
+        <p class="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Datos del celular recibido en retoma</p>
+
+        <div>
+          <%= f.label :trade_in_value, "Valor de la retoma", class: "field-label" %>
+          <%= f.number_field :trade_in_value, inputmode: "numeric", min: 0, step: 1000, class: "field-input" %>
+        </div>
+
+        <div>
+          <%= f.label :trade_in_model, "Modelo", class: "field-label" %>
+          <%= f.text_field :trade_in_model, list: "trade-in-model-options", class: "field-input" %>
+          <datalist id="trade-in-model-options">
+            <% Phone::MODELS.each { |m| %><option value="<%= m %>"><% } %>
+          </datalist>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <%= f.label :trade_in_storage_capacity, "Capacidad", class: "field-label" %>
+            <%= f.select :trade_in_storage_capacity, Phone::CAPACITIES, { include_blank: "Selecciona" }, class: "field-select" %>
+          </div>
+          <div>
+            <%= f.label :trade_in_color, "Color", class: "field-label" %>
+            <%= f.text_field :trade_in_color, class: "field-input" %>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <%= f.label :trade_in_imei, "IMEI", class: "field-label" %>
+            <%= f.text_field :trade_in_imei, inputmode: "numeric", class: "field-input" %>
+          </div>
+          <div>
+            <%= f.label :trade_in_battery_health, "Batería %", class: "field-label" %>
+            <%= f.number_field :trade_in_battery_health, inputmode: "numeric", min: 0, max: 100, class: "field-input" %>
+          </div>
+        </div>
+
+        <div>
+          <%= f.label :trade_in_condition, "Condición", class: "field-label" %>
+          <%= f.select :trade_in_condition, Phone::CONDITIONS, { include_blank: "Selecciona" }, class: "field-select" %>
+        </div>
+
+        <div>
+          <%= f.label :trade_in_icloud_account, "Correo iCloud / Apple ID", class: "field-label" %>
+          <%= f.text_field :trade_in_icloud_account, autocapitalize: "off", autocorrect: "off", class: "field-input" %>
+        </div>
+        <label class="field-checkbox-row">
+          <span>iCloud liberado</span>
+          <%= f.check_box :trade_in_icloud_unlocked, class: "h-5 w-5 rounded accent-brand-600" %>
+        </label>
+
+        <div>
+          <%= f.label :trade_in_notes, "Notas", class: "field-label" %>
+          <%= f.text_area :trade_in_notes, rows: 2, class: "field-input" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :notes, "Notas", class: "field-label" %>
+    <%= f.text_area :notes, rows: 3, class: "field-input" %>
+  </div>
+
+  <% if sale.persisted? %>
+    <div class="card grid grid-cols-2 gap-3 text-sm">
+      <div><p class="stat-label">Saldo financiado</p><p class="font-semibold"><%= cop(sale.financed_balance) %></p></div>
+      <div><p class="stat-label">Costo del equipo</p><p class="font-semibold"><%= cop(sale.equipment_cost) %></p></div>
+      <div><p class="stat-label">Ganancia</p><p class="font-semibold"><%= cop(sale.profit) %></p></div>
+      <div><p class="stat-label">Fin de garantía</p><p class="font-semibold"><%= fecha(sale.warranty_end_date) %></p></div>
+    </div>
+  <% end %>
+
+  <div class="space-y-2 pt-2">
+    <%= f.submit sale.persisted? ? "Guardar cambios" : "Registrar venta", class: "btn-primary" %>
+    <% if sale.persisted? %>
+      <%= button_to "Eliminar venta", sale_path(sale), method: :delete, class: "btn-danger", data: { turbo_confirm: "¿Eliminar esta venta? Esta acción no se puede deshacer." } %>
+    <% end %>
+    <%= link_to "Cancelar", sales_path, class: "btn-secondary" %>
+  </div>
+<% end %>

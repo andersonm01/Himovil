@@ -1,0 +1,19 @@
+<div class="space-y-5">
+  <h2 class="text-lg font-semibold text-neutral-900 dark:text-neutral-50">Iniciar sesión</h2>
+
+  <%= form_with url: session_url, class: "space-y-5" do |form| %>
+    <div>
+      <%= form.label :email_address, "Usuario", class: "field-label" %>
+      <%= form.text_field :email_address, required: true, autofocus: true, autocomplete: "username",
+            placeholder: "Tu usuario", value: params[:email_address], class: "field-input" %>
+    </div>
+
+    <div>
+      <%= form.label :password, "Contraseña", class: "field-label" %>
+      <%= form.password_field :password, required: true, autocomplete: "current-password",
+            placeholder: "Tu contraseña", maxlength: 72, class: "field-input" %>
+    </div>
+
+    <%= form.submit "Entrar", class: "btn-primary" %>
+  <% end %>
+</div>

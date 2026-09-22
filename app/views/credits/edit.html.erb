@@ -1,0 +1,31 @@
+<% content_for :page_title, @credit.code %>
+
+<%= form_with model: @credit, url: credit_path(@credit), local: true, class: "space-y-5" do |f| %>
+  <% if @credit.errors.any? %>
+    <div class="flash-alert mx-0!">
+      <ul class="list-disc pl-5">
+        <% @credit.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="card p-3! text-sm">
+    <p class="stat-label">Cliente</p>
+    <p class="font-medium"><%= @credit.customer_name %> · <%= @credit.entity %></p>
+  </div>
+
+  <div>
+    <%= f.label :installments_count, "Número de cuotas", class: "field-label" %>
+    <%= f.number_field :installments_count, inputmode: "numeric", min: 1, class: "field-input" %>
+  </div>
+
+  <div>
+    <%= f.label :due_date, "Fecha de pago", class: "field-label" %>
+    <%= f.date_field :due_date, class: "field-input" %>
+  </div>
+
+  <div class="space-y-2 pt-2">
+    <%= f.submit "Guardar cambios", class: "btn-primary" %>
+    <%= link_to "Cancelar", credit_path(@credit), class: "btn-secondary" %>
+  </div>
+<% end %>

@@ -1,0 +1,32 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: <%= ENV.fetch("HIMOVIL_DATABASE_HOST", "/tmp") %>
+  username: <%= ENV.fetch("HIMOVIL_DATABASE_USERNAME", "himovil") %>
+  password: <%= ENV.fetch("HIMOVIL_DATABASE_PASSWORD", nil) %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: himovil_development
+
+test:
+  <<: *default
+  database: himovil_test
+
+production:
+  primary:
+    <<: *default
+    database: <%= ENV.fetch("HIMOVIL_DATABASE_NAME", "himovil_production") %>
+  cache:
+    <<: *default
+    database: <%= ENV.fetch("HIMOVIL_DATABASE_NAME", "himovil_production") %>_cache
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *default
+    database: <%= ENV.fetch("HIMOVIL_DATABASE_NAME", "himovil_production") %>_queue
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *default
+    database: <%= ENV.fetch("HIMOVIL_DATABASE_NAME", "himovil_production") %>_cable
+    migrations_paths: db/cable_migrate

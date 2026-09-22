@@ -1,0 +1,36 @@
+<% content_for :page_title, "Ventas" %>
+
+<div class="space-y-4">
+  <%= form_with url: sales_path, method: :get, class: "space-y-2" do %>
+    <input type="search" name="q" value="<%= params[:q] %>" placeholder="Buscar por cliente, cédula o celular" class="field-input">
+    <%= select_tag :forma_pago, options_for_select([ [ "Toda forma de pago", "" ] ] + Sale::PAYMENT_METHODS, params[:forma_pago]), class: "field-select w-full", onchange: "this.form.requestSubmit()" %>
+  <% end %>
+
+  <% if @sales.empty? %>
+    <div class="empty-state">
+      <p class="font-medium">No hay ventas para mostrar</p>
+      <p class="text-sm">Registra una con el botón + de abajo.</p>
+    </div>
+  <% else %>
+    <ul class="space-y-3">
+      <% @sales.each do |sale| %>
+        <li>
+          <%= link_to sale_path(sale), class: "card-link" do %>
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-xs font-medium text-neutral-400"><%= sale.code %> · <%= fecha(sale.sale_date) %></p>
+                <p class="truncate font-semibold text-neutral-900 dark:text-neutral-50"><%= sale.customer_name %></p>
+                <p class="text-sm text-neutral-500 dark:text-neutral-400"><%= sale.phone&.model %> <%= sale.phone&.storage_capacity %></p>
+              </div>
+              <span class="badge-blue shrink-0"><%= sale.payment_method.presence || "—" %></span>
+            </div>
+            <div class="mt-3 flex items-center justify-between">
+              <span class="text-xs text-neutral-400"><%= sale.financing_entity if sale.financed_balance > 0 %></span>
+              <span class="text-lg font-bold tabular-nums text-neutral-900 dark:text-neutral-50"><%= cop(sale.sale_price) %></span>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

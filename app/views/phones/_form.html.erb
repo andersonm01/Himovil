@@ -1,0 +1,134 @@
+<%= form_with model: phone, url: phone.persisted? ? phone_path(phone) : phones_path, local: true, class: "space-y-5" do |f| %>
+  <% if phone.errors.any? %>
+    <div class="flash-alert mx-0!">
+      <p class="font-semibold"><%= pluralize(phone.errors.count, "error") %> al guardar:</p>
+      <ul class="mt-1 list-disc pl-5">
+        <% phone.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div>
+      <%= f.label :entry_date, "Fecha de ingreso", class: "field-label" %>
+      <%= f.date_field :entry_date, class: "field-input" %>
+    </div>
+    <div>
+      <%= f.label :condition, "Condición", class: "field-label" %>
+      <%= f.select :condition, Phone::CONDITIONS, { include_blank: "Selecciona" }, class: "field-select" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :model, "Modelo", class: "field-label" %>
+    <%= f.text_field :model, list: "model-options", placeholder: "Ej: iPhone 14 Pro", class: "field-input" %>
+    <datalist id="model-options">
+      <% Phone::MODELS.each { |m| %><option value="<%= m %>"><% } %>
+    </datalist>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div>
+      <%= f.label :storage_capacity, "Capacidad", class: "field-label" %>
+      <%= f.select :storage_capacity, Phone::CAPACITIES, { include_blank: "Selecciona" }, class: "field-select" %>
+    </div>
+    <div>
+      <%= f.label :color, "Color", class: "field-label" %>
+      <%= f.text_field :color, class: "field-input" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div>
+      <%= f.label :imei, "IMEI", class: "field-label" %>
+      <%= f.text_field :imei, inputmode: "numeric", class: "field-input" %>
+    </div>
+    <div>
+      <%= f.label :battery_health, "Salud de batería %", class: "field-label" %>
+      <%= f.number_field :battery_health, inputmode: "numeric", min: 0, max: 100, class: "field-input" %>
+    </div>
+  </div>
+
+  <div class="space-y-2">
+    <p class="field-label">Piezas cambiadas</p>
+    <label class="field-checkbox-row">
+      <span>Pantalla</span>
+      <%= f.check_box :screen_replaced, class: "h-5 w-5 rounded accent-brand-600" %>
+    </label>
+    <label class="field-checkbox-row">
+      <span>Batería</span>
+      <%= f.check_box :battery_replaced, class: "h-5 w-5 rounded accent-brand-600" %>
+    </label>
+    <label class="field-checkbox-row">
+      <span>Cámara</span>
+      <%= f.check_box :camera_replaced, class: "h-5 w-5 rounded accent-brand-600" %>
+    </label>
+    <label class="field-checkbox-row">
+      <span>Face ID / Touch ID funciona</span>
+      <%= f.check_box :face_id_touch_id_works, class: "h-5 w-5 rounded accent-brand-600" %>
+    </label>
+  </div>
+
+  <div>
+    <%= f.label :other_details, "Otras piezas o detalles", class: "field-label" %>
+    <%= f.text_area :other_details, rows: 2, class: "field-input" %>
+  </div>
+
+  <div>
+    <%= f.label :icloud_account, "Correo iCloud / Apple ID", class: "field-label" %>
+    <%= f.text_field :icloud_account, autocapitalize: "off", autocorrect: "off", class: "field-input" %>
+  </div>
+  <label class="field-checkbox-row">
+    <span>iCloud liberado</span>
+    <%= f.check_box :icloud_unlocked, class: "h-5 w-5 rounded accent-brand-600" %>
+  </label>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div>
+      <%= f.label :source, "Origen", class: "field-label" %>
+      <%= f.select :source, Phone::SOURCES, { include_blank: "Selecciona" }, class: "field-select" %>
+    </div>
+    <div>
+      <%= f.label :supplier, "Comprado a / proveedor", class: "field-label" %>
+      <%= f.text_field :supplier, class: "field-input" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div>
+      <%= f.label :purchase_price, "Precio de entrada", class: "field-label" %>
+      <%= f.number_field :purchase_price, inputmode: "numeric", min: 0, step: 1000, class: "field-input" %>
+    </div>
+    <div>
+      <%= f.label :repair_cost, "Gastos de reparación", class: "field-label" %>
+      <%= f.number_field :repair_cost, inputmode: "numeric", min: 0, step: 1000, class: "field-input" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :sale_price, "Precio de venta", class: "field-label" %>
+    <%= f.number_field :sale_price, inputmode: "numeric", min: 0, step: 1000, class: "field-input" %>
+  </div>
+
+  <div>
+    <%= f.label :notes, "Notas", class: "field-label" %>
+    <%= f.text_area :notes, rows: 3, class: "field-input" %>
+  </div>
+
+  <% if phone.persisted? %>
+    <div class="card grid grid-cols-2 gap-3 text-sm">
+      <div><p class="stat-label">Costo total</p><p class="font-semibold"><%= cop(phone.total_cost) %></p></div>
+      <div><p class="stat-label">Margen esperado</p><p class="font-semibold"><%= cop(phone.expected_margin) %> (<%= phone.margin_percent %>%)</p></div>
+      <div><p class="stat-label">Estado</p><p class="font-semibold"><%= phone.status %></p></div>
+      <div><p class="stat-label">Días en inventario</p><p class="font-semibold"><%= phone.days_in_inventory %></p></div>
+    </div>
+  <% end %>
+
+  <div class="space-y-2 pt-2">
+    <%= f.submit phone.persisted? ? "Guardar cambios" : "Agregar al inventario", class: "btn-primary" %>
+    <% if phone.persisted? %>
+      <%= button_to "Eliminar celular", phone_path(phone), method: :delete, class: "btn-danger", data: { turbo_confirm: "¿Eliminar este celular del inventario? Esta acción no se puede deshacer." } %>
+    <% end %>
+    <%= link_to "Cancelar", phones_path, class: "btn-secondary" %>
+  </div>
+<% end %>

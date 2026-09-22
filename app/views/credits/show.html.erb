@@ -1,0 +1,71 @@
+<% content_for :page_title, @credit.code %>
+<% content_for :top_bar_action do %>
+  <%= link_to "Editar", edit_credit_path(@credit), class: "text-sm font-semibold text-brand-600 dark:text-brand-400" %>
+<% end %>
+
+<div class="space-y-5">
+  <section class="card space-y-3">
+    <div class="flex items-start justify-between">
+      <div>
+        <p class="text-xs font-medium text-neutral-400"><%= @credit.entity %></p>
+        <h2 class="text-xl font-bold text-neutral-900 dark:text-neutral-50"><%= @credit.customer_name %></h2>
+        <p class="text-sm text-neutral-500 dark:text-neutral-400"><%= @credit.phone&.model %></p>
+      </div>
+      <% if @credit.paid? %>
+        <span class="badge-green">Pagado</span>
+      <% elsif @credit.overdue? %>
+        <span class="badge-red">Atrasado</span>
+      <% else %>
+        <span class="badge-blue">Activo</span>
+      <% end %>
+    </div>
+
+    <div class="progress-track">
+      <div class="progress-fill" style="width: <%= @credit.progress_percent %>%"></div>
+    </div>
+    <div class="grid grid-cols-3 gap-2 text-center text-sm">
+      <div><p class="stat-label">Inicial</p><p class="font-semibold"><%= cop(@credit.initial_balance) %></p></div>
+      <div><p class="stat-label">Abonado</p><p class="font-semibold text-emerald-600 dark:text-emerald-400"><%= cop(@credit.total_paid) %></p></div>
+      <div><p class="stat-label">Pendiente</p><p class="font-semibold"><%= cop(@credit.pending_balance) %></p></div>
+    </div>
+    <% if @credit.installments_count.present? || @credit.due_date.present? %>
+      <div class="grid grid-cols-2 gap-2 text-sm">
+        <% if @credit.installments_count.present? %>
+          <div><p class="stat-label">Cuotas</p><p class="font-medium"><%= @credit.installments_count %></p></div>
+        <% end %>
+        <% if @credit.due_date.present? %>
+          <div><p class="stat-label">Fecha de pago</p><p class="font-medium <%= 'text-red-600 dark:text-red-400' if @credit.overdue? %>"><%= fecha(@credit.due_date) %></p></div>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+
+  <% unless @credit.paid? %>
+    <section class="grid grid-cols-2 gap-2">
+      <%= link_to "Registrar abono", new_credit_payment_path(@credit), class: "btn-primary" %>
+      <% if (wa = whatsapp_link(@credit.customer_phone&.gsub(/\D/, ""), @credit.whatsapp_reminder_message)) %>
+        <%= link_to "Recordar por WhatsApp", wa, target: "_blank", rel: "noopener", class: "btn-secondary" %>
+      <% end %>
+    </section>
+  <% end %>
+
+  <section class="space-y-3">
+    <h2 class="font-semibold text-neutral-900 dark:text-neutral-50">Historial de abonos</h2>
+    <% if @credit.payments.empty? %>
+      <div class="empty-state"><p class="text-sm">Aún no hay abonos registrados.</p></div>
+    <% else %>
+      <ul class="space-y-2">
+        <% @credit.payments.order(payment_date: :desc, created_at: :desc).each do |payment| %>
+          <li class="card p-3! flex items-center justify-between">
+            <div>
+              <p class="font-medium"><%= cop(payment.amount) %></p>
+              <p class="text-xs text-neutral-500 dark:text-neutral-400"><%= fecha(payment.payment_date) %> · <%= payment.payment_method.presence || "—" %></p>
+              <% if payment.note.present? %><p class="text-xs text-neutral-400"><%= payment.note %></p><% end %>
+            </div>
+            <%= button_to "Eliminar", credit_payment_path(@credit, payment), method: :delete, class: "btn-ghost w-auto! px-3! py-2! text-sm", data: { turbo_confirm: "¿Eliminar este abono?" } %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </section>
+</div>

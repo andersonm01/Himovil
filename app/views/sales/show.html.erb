@@ -1,0 +1,61 @@
+<% content_for :page_title, @sale.code %>
+<% content_for :top_bar_action do %>
+  <%= link_to "Editar", edit_sale_path(@sale), class: "text-sm font-semibold text-brand-600 dark:text-brand-400" %>
+<% end %>
+
+<div class="space-y-5">
+  <section class="card space-y-1">
+    <p class="text-xs font-medium text-neutral-400"><%= fecha(@sale.sale_date) %></p>
+    <h2 class="text-xl font-bold text-neutral-900 dark:text-neutral-50"><%= @sale.customer_name %></h2>
+    <p class="text-sm text-neutral-500 dark:text-neutral-400">
+      <%= link_to "#{@sale.phone.code} · #{@sale.phone.model} #{@sale.phone.storage_capacity}", edit_phone_path(@sale.phone), class: "underline" %>
+    </p>
+  </section>
+
+  <section class="grid grid-cols-2 gap-2">
+    <% if @sale.customer_whatsapp_number %>
+      <%= link_to whatsapp_link(@sale.customer_whatsapp_number, "Hola #{@sale.customer_name}, te escribimos de tu tienda de celulares por la compra de tu #{@sale.phone.model}."), target: "_blank", rel: "noopener", class: "btn-primary" do %>
+        WhatsApp
+      <% end %>
+    <% end %>
+    <% if @sale.customer_phone.present? %>
+      <%= link_to "Llamar", "tel:#{@sale.customer_phone}", class: "btn-secondary" %>
+    <% end %>
+  </section>
+
+  <section class="card grid grid-cols-2 gap-3 text-sm">
+    <div><p class="stat-label">Cédula</p><p class="font-medium"><%= @sale.customer_id_number.presence || "—" %></p></div>
+    <div><p class="stat-label">Email</p><p class="font-medium"><%= @sale.customer_email.presence || "—" %></p></div>
+    <div><p class="stat-label">Precio de venta</p><p class="font-semibold"><%= cop(@sale.sale_price) %></p></div>
+    <div><p class="stat-label">Forma de pago</p><p class="font-medium"><%= @sale.payment_method.presence || "—" %></p></div>
+    <% if @sale.trade_in? %>
+      <div><p class="stat-label">Retoma</p><p class="font-medium">Sí, <%= cop(@sale.trade_in_value) %></p></div>
+    <% end %>
+    <div><p class="stat-label">Cuota inicial</p><p class="font-medium"><%= cop(@sale.down_payment) %></p></div>
+    <div><p class="stat-label">Saldo financiado</p><p class="font-semibold"><%= cop(@sale.financed_balance) %></p></div>
+    <div><p class="stat-label">Costo del equipo</p><p class="font-medium"><%= cop(@sale.equipment_cost) %></p></div>
+    <div><p class="stat-label">Ganancia</p><p class="font-semibold text-emerald-600 dark:text-emerald-400"><%= cop(@sale.profit) %></p></div>
+    <div><p class="stat-label">Garantía</p><p class="font-medium"><%= @sale.warranty_days.to_i %> días (hasta <%= fecha(@sale.warranty_end_date) %>)</p></div>
+  </section>
+
+  <% if @sale.credit %>
+    <section>
+      <%= link_to credit_path(@sale.credit), class: "card-link flex items-center justify-between" do %>
+        <div>
+          <p class="stat-label">Crédito <%= @sale.credit.code %></p>
+          <p class="font-semibold"><%= cop(@sale.credit.pending_balance) %> pendientes</p>
+        </div>
+        <span class="<%= @sale.credit.paid? ? 'badge-green' : 'badge-blue' %>"><%= @sale.credit.status %></span>
+      <% end %>
+    </section>
+  <% end %>
+
+  <% if @sale.notes.present? %>
+    <section class="card">
+      <p class="stat-label">Notas</p>
+      <p class="mt-1 text-sm"><%= @sale.notes %></p>
+    </section>
+  <% end %>
+
+  <%= button_to "Eliminar venta", sale_path(@sale), method: :delete, class: "btn-danger", data: { turbo_confirm: "¿Eliminar esta venta? Esta acción no se puede deshacer." } %>
+</div>

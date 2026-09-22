@@ -1,0 +1,91 @@
+<% content_for :page_title, "Resumen" %>
+
+<div class="space-y-6">
+  <section class="grid grid-cols-2 gap-3">
+    <div class="stat-card">
+      <p class="stat-label">Disponibles</p>
+      <p class="stat-value"><%= @available_count %></p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Invertido en inventario</p>
+      <p class="stat-value"><%= cop(@inventory_cost) %></p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Valor a precio de venta</p>
+      <p class="stat-value"><%= cop(@inventory_sale_value) %></p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Ganancia esperada</p>
+      <p class="stat-value text-emerald-600 dark:text-emerald-400"><%= cop(@expected_profit) %></p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Ventas del mes</p>
+      <p class="stat-value"><%= @month_sales_count %></p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Total vendido (mes)</p>
+      <p class="stat-value"><%= cop(@month_sales_total) %></p>
+    </div>
+    <div class="stat-card col-span-2">
+      <p class="stat-label">Ganancia del mes</p>
+      <p class="stat-value text-emerald-600 dark:text-emerald-400"><%= cop(@month_profit) %></p>
+    </div>
+  </section>
+
+  <section class="card space-y-3">
+    <div class="flex items-center justify-between">
+      <h2 class="font-semibold text-neutral-900 dark:text-neutral-50">Saldo por cobrar</h2>
+      <p class="text-lg font-bold tabular-nums text-brand-700 dark:text-brand-400"><%= cop(@total_receivable) %></p>
+    </div>
+    <% if @receivable_by_entity.present? %>
+      <ul class="divide-y divide-neutral-100 dark:divide-neutral-800">
+        <% @receivable_by_entity.each do |entity, amount| %>
+          <li class="flex items-center justify-between py-2 text-sm">
+            <span class="text-neutral-600 dark:text-neutral-400"><%= entity %></span>
+            <span class="font-medium tabular-nums"><%= cop(amount) %></span>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="text-sm text-neutral-500 dark:text-neutral-400">No hay saldos pendientes.</p>
+    <% end %>
+  </section>
+
+  <section class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <%= link_to credits_path(estado: "Activo"), class: "card-link flex items-center justify-between" do %>
+      <div>
+        <p class="stat-label">Créditos atrasados</p>
+        <p class="stat-value <%= 'text-red-600 dark:text-red-400' if @overdue_credits_count > 0 %>"><%= @overdue_credits_count %></p>
+      </div>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9 2.7 17a1.8 1.8 0 0 0 1.5 2.7h15.6a1.8 1.8 0 0 0 1.5-2.7L13.7 3.9a1.8 1.8 0 0 0-3.4 0Z"/></svg>
+    <% end %>
+    <%= link_to phones_path(estado: "Disponible"), class: "card-link flex items-center justify-between" do %>
+      <div>
+        <p class="stat-label">iCloud sin liberar</p>
+        <p class="stat-value <%= 'text-red-600 dark:text-red-400' if @icloud_pending_count > 0 %>"><%= @icloud_pending_count %></p>
+      </div>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+    <% end %>
+  </section>
+
+  <section class="card space-y-3">
+    <h2 class="font-semibold text-neutral-900 dark:text-neutral-50">Exportar datos</h2>
+    <div class="grid grid-cols-2 gap-2">
+      <%= link_to "Inventario", export_phones_path, class: "btn-secondary" %>
+      <%= link_to "Ventas", export_sales_path, class: "btn-secondary" %>
+      <%= link_to "Créditos", export_credits_path, class: "btn-secondary" %>
+      <%= link_to "Abonos", export_payments_path, class: "btn-secondary" %>
+    </div>
+  </section>
+
+  <section class="card space-y-3">
+    <h2 class="font-semibold text-neutral-900 dark:text-neutral-50">Datos de ejemplo</h2>
+    <p class="text-sm text-neutral-500 dark:text-neutral-400">
+      Carga 2 celulares y 1 venta con retoma y crédito de ejemplo para probar la app, o bórralos cuando quieras.
+    </p>
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <%= button_to "Cargar datos de ejemplo", load_demo_data_path, method: :post, class: "btn-secondary" %>
+      <%= button_to "Borrar datos de ejemplo", destroy_demo_data_path, method: :delete, class: "btn-danger", disabled: !@has_demo_data, data: { turbo_confirm: "¿Borrar todos los datos de ejemplo?" } %>
+    </div>
+  </section>
+</div>

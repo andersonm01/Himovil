@@ -1,0 +1,27 @@
+<% content_for :page_title, "Registrar abono" %>
+
+<div class="space-y-4">
+  <p class="text-sm text-neutral-500 dark:text-neutral-400">Elige el crédito al que quieres registrar un abono.</p>
+
+  <% if @credits.empty? %>
+    <div class="empty-state">
+      <p class="font-medium">No hay créditos activos</p>
+    </div>
+  <% else %>
+    <ul class="space-y-3">
+      <% @credits.each do |credit| %>
+        <li>
+          <%= link_to new_credit_payment_path(credit), class: "card-link" do %>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs font-medium text-neutral-400"><%= credit.code %> · <%= credit.entity %></p>
+                <p class="font-semibold text-neutral-900 dark:text-neutral-50"><%= credit.customer_name %></p>
+              </div>
+              <span class="font-semibold"><%= cop(credit.pending_balance) %></span>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

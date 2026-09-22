@@ -1,0 +1,54 @@
+<% content_for :page_title, "Inventario" %>
+
+<div class="space-y-4">
+  <%= form_with url: phones_path, method: :get, class: "space-y-2" do %>
+    <input type="search" name="q" value="<%= params[:q] %>" placeholder="Buscar por modelo, color, IMEI o proveedor" class="field-input">
+    <div class="flex gap-2 overflow-x-auto pb-1">
+      <%= select_tag :estado, options_for_select([ [ "Todos los estados", "" ], "Disponible", "Vendido" ], params[:estado]), class: "field-select flex-1", onchange: "this.form.requestSubmit()" %>
+      <%= select_tag :condicion, options_for_select([ [ "Toda condición", "" ] ] + Phone::CONDITIONS, params[:condicion]), class: "field-select flex-1", onchange: "this.form.requestSubmit()" %>
+    </div>
+  <% end %>
+
+  <% if @phones.empty? %>
+    <div class="empty-state">
+      <p class="font-medium">No hay celulares para mostrar</p>
+      <p class="text-sm">Agrega uno con el botón + de abajo.</p>
+    </div>
+  <% else %>
+    <ul class="space-y-3">
+      <% @phones.each do |phone| %>
+        <li>
+          <%= link_to edit_phone_path(phone), class: "card-link" do %>
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-xs font-medium text-neutral-400"><%= phone.code %></p>
+                <p class="truncate font-semibold text-neutral-900 dark:text-neutral-50">
+                  <%= phone.model %> · <%= phone.storage_capacity %>
+                </p>
+                <p class="text-sm text-neutral-500 dark:text-neutral-400"><%= phone.color %></p>
+              </div>
+              <span class="<%= phone.available? ? 'badge-green' : 'badge-neutral' %> shrink-0"><%= phone.status %></span>
+            </div>
+
+            <div class="mt-3 flex flex-wrap items-center gap-2">
+              <% if phone.battery_health.present? %>
+                <span class="badge <%= phone.battery_low? ? 'badge-red' : 'badge-neutral' %>">Batería <%= phone.battery_health %>%</span>
+              <% end %>
+              <% phone.changed_parts.each do |part| %>
+                <span class="badge-amber"><%= part %></span>
+              <% end %>
+              <% if phone.icloud_pending? %>
+                <span class="badge-red">iCloud sin liberar</span>
+              <% end %>
+            </div>
+
+            <div class="mt-3 flex items-center justify-between">
+              <span class="text-xs text-neutral-400"><%= phone.condition %></span>
+              <span class="text-lg font-bold tabular-nums text-neutral-900 dark:text-neutral-50"><%= cop(phone.sale_price) %></span>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>
