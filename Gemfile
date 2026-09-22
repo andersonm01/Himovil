@@ -23,7 +23,7 @@ gem "jbuilder"
 # CSV support (unbundled from stdlib as of Ruby 3.4)
 gem "csv"
 # Pin to the 2.x series: json 3.x breaks ActiveSupport's cookie/session (de)serialization
-gem "json", "~> 2.9"
+gem "json", "~> 3.0"
 # Spanish translations for Rails/ActiveModel validation messages, dates, etc.
 gem "rails-i18n"
 
@@ -43,7 +43,7 @@ gem "kamal", require: false
 gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 2.1"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
