@@ -5,4 +5,9 @@ if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
 fi
 
+# Thruster listens on HTTP_PORT (default 80), not on the platform-assigned PORT.
+# Hosts like Railway inject PORT and expect the container to listen there, so
+# forward it along; Thruster sets Puma's own PORT to TARGET_PORT internally.
+export HTTP_PORT="${PORT:-80}"
+
 exec "${@}"
