@@ -5,6 +5,10 @@ updates:
   schedule:
     interval: weekly
   open-pull-requests-limit: 10
+  ignore:
+    # json 3.x breaks ActiveSupport's cookie/session decoding (see Gemfile
+    # comment on this gem) — deliberately pinned to 2.x, don't propose bumps.
+    - dependency-name: "json"
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
