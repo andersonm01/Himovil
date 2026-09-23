@@ -58,7 +58,7 @@
 
   <div>
     <%= f.label :sale_price, "Precio de venta", class: "field-label" %>
-    <%= f.number_field :sale_price, inputmode: "numeric", min: 0, step: 1000, class: "field-input",
+    <%= f.number_field :sale_price, inputmode: "numeric", min: 0, class: "field-input",
           data: (sale.persisted? ? {} : { icloud_warning_target: "salePrice" }) %>
   </div>
 
@@ -76,7 +76,7 @@
   <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
     <div>
       <%= f.label :down_payment, "Cuota inicial", class: "field-label" %>
-      <%= f.number_field :down_payment, inputmode: "numeric", min: 0, step: 1000, class: "field-input" %>
+      <%= f.number_field :down_payment, inputmode: "numeric", min: 0, class: "field-input" %>
     </div>
     <div>
       <%= f.label :warranty_days, "Garantía (días)", class: "field-label" %>
@@ -98,7 +98,7 @@
 
         <div>
           <%= f.label :trade_in_value, "Valor de la retoma", class: "field-label" %>
-          <%= f.number_field :trade_in_value, inputmode: "numeric", min: 0, step: 1000, class: "field-input" %>
+          <%= f.number_field :trade_in_value, inputmode: "numeric", min: 0, class: "field-input" %>
         </div>
 
         <div>

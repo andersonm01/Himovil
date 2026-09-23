@@ -97,17 +97,17 @@
   <div class="grid grid-cols-2 gap-3">
     <div>
       <%= f.label :purchase_price, "Precio de entrada", class: "field-label" %>
-      <%= f.number_field :purchase_price, inputmode: "numeric", min: 0, step: 1000, class: "field-input" %>
+      <%= f.number_field :purchase_price, inputmode: "numeric", min: 0, class: "field-input" %>
     </div>
     <div>
       <%= f.label :repair_cost, "Gastos de reparación", class: "field-label" %>
-      <%= f.number_field :repair_cost, inputmode: "numeric", min: 0, step: 1000, class: "field-input" %>
+      <%= f.number_field :repair_cost, inputmode: "numeric", min: 0, class: "field-input" %>
     </div>
   </div>
 
   <div>
     <%= f.label :sale_price, "Precio de venta", class: "field-label" %>
-    <%= f.number_field :sale_price, inputmode: "numeric", min: 0, step: 1000, class: "field-input" %>
+    <%= f.number_field :sale_price, inputmode: "numeric", min: 0, class: "field-input" %>
   </div>
 
   <div>
