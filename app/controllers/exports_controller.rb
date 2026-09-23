@@ -10,7 +10,7 @@ class ExportsController < ApplicationController
         "Origen", "Comprado a / Proveedor", "Precio entrada", "Gastos reparación", "Precio venta",
         "Costo total", "Margen esperado", "Margen %", "Estado", "Días en inventario", "Notas"
       ]
-      Phone.order(:id).each do |p|
+      Phone.includes(:sale).order(:id).each do |p|
         rows << [
           p.code, p.entry_date, p.model, p.storage_capacity, p.color, p.imei, p.condition,
           p.battery_health, si_no(p.screen_replaced), si_no(p.battery_replaced), si_no(p.camera_replaced),
@@ -30,7 +30,7 @@ class ExportsController < ApplicationController
         "Forma de pago", "Entidad", "Retoma", "Valor retoma", "Cuota inicial", "Saldo financiado",
         "Costo equipo", "Ganancia", "Garantía (días)", "Fin garantía", "Notas"
       ]
-      Sale.order(:id).each do |s|
+      Sale.includes(:phone).order(:id).each do |s|
         rows << [
           s.code, s.sale_date, s.phone&.code, s.customer_name, s.customer_id_number, s.customer_phone,
           s.customer_email, s.sale_price, s.payment_method, s.financing_entity, si_no(s.trade_in),
@@ -48,7 +48,7 @@ class ExportsController < ApplicationController
         "Código", "Cliente", "Celular", "Entidad", "Saldo inicial", "Total abonado",
         "Saldo pendiente", "Cuotas", "Fecha de pago", "Estado", "Atrasado"
       ]
-      Credit.order(:id).each do |c|
+      Credit.includes(:payments, sale: :phone).order(:id).each do |c|
         rows << [
           c.code, c.customer_name, c.phone&.code, c.entity, c.initial_balance, c.total_paid,
           c.pending_balance, c.installments_count, c.due_date, c.status, si_no(c.overdue?)

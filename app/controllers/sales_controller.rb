@@ -2,7 +2,7 @@ class SalesController < ApplicationController
   before_action :set_sale, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @sales = Sale.all.order(sale_date: :desc, created_at: :desc)
+    @sales = Sale.includes(:phone).order(sale_date: :desc, created_at: :desc)
     @sales = @sales.search(params[:q]) if params[:q].present?
     @sales = @sales.where(payment_method: params[:forma_pago]) if params[:forma_pago].present?
   end

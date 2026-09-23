@@ -18,7 +18,9 @@ class Credit < ApplicationRecord
   end
 
   def total_paid
-    payments.sum(:amount)
+    # Block form reuses preloaded `payments` (via .includes) with no extra
+    # query; payments.sum(:amount) would always hit the database.
+    payments.sum(&:amount)
   end
 
   def pending_balance

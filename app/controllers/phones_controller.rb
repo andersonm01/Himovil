@@ -2,7 +2,7 @@ class PhonesController < ApplicationController
   before_action :set_phone, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @phones = Phone.all.order(created_at: :desc)
+    @phones = Phone.includes(:sale).order(created_at: :desc)
     @phones = @phones.search(params[:q]) if params[:q].present?
     @phones = @phones.available if params[:estado] == "Disponible"
     @phones = @phones.sold if params[:estado] == "Vendido"

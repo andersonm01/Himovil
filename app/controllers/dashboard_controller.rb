@@ -9,9 +9,9 @@ class DashboardController < ApplicationController
     @month_sales = Sale.this_month
     @month_sales_count = @month_sales.count
     @month_sales_total = @month_sales.sum(:sale_price)
-    @month_profit = @month_sales.to_a.sum(&:profit)
+    @month_profit = @month_sales.includes(:phone).to_a.sum(&:profit)
 
-    active_credits = Credit.active.includes(:sale)
+    active_credits = Credit.active.includes(:payments, :sale)
     @total_receivable = active_credits.to_a.sum(&:pending_balance)
     @receivable_by_entity = active_credits.group_by(&:entity).transform_values { |c| c.sum(&:pending_balance) }
     @overdue_credits_count = active_credits.count(&:overdue?)

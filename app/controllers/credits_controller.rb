@@ -2,7 +2,7 @@ class CreditsController < ApplicationController
   before_action :set_credit, only: [ :show, :edit, :update ]
 
   def index
-    @credits = Credit.includes(sale: :phone).order(created_at: :desc)
+    @credits = Credit.includes(:payments, sale: :phone).order(created_at: :desc)
     @credits = @credits.where(status: params[:estado]) if params[:estado].present?
     @credits = @credits.where(entity: params[:entidad]) if params[:entidad].present?
     if params[:q].present?
@@ -15,7 +15,7 @@ class CreditsController < ApplicationController
   end
 
   def choose_payment
-    @credits = Credit.active.includes(sale: :phone).order(created_at: :desc)
+    @credits = Credit.active.includes(:payments, sale: :phone).order(created_at: :desc)
   end
 
   def edit
